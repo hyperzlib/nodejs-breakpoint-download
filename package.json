@@ -1,0 +1,16 @@
+{
+  "name": "downloadfile",
+  "version": "1.0.0",
+  "description": "A file download class",
+  "main": "downloadFile.js",
+  "scripts": {
+    "test": "downloadFile.js"
+  },
+  "keywords": [
+    "download",
+    "range",
+    "pause"
+  ],
+  "author": "hyperzlib",
+  "license": "LGPL-3.0"
+}
