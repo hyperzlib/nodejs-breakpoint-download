@@ -1,17 +1,17 @@
 # nodejs-breakpoint-download
 A nodejs breakpoint download library
-Usage: 
+## Usage
 ```javascript
 var down = new downloadFile(url, dstFile);
 down.start();
 ```
-Construct:
+## Construct
 ```javascript
 new downloadFile(url, dstFile);
 new downloadFile(sleepData);
 ```
 
-Functions:
+## Functions
 
 | Name | Description |
 | ---- | ----------- |
@@ -21,7 +21,7 @@ Functions:
 | sleep | Status to json data (use promise) |
 | on | Subscribe event |
 
-Properties:
+## Properties
 
 | Name | Description |
 | ---- | ----------- |
@@ -29,7 +29,7 @@ Properties:
 | downloadedBytes | File downloaded |
 | fileLength | File length |
 
-Events:
+## Events
 
 | Name | Description |
 | ---- | ----------- |
