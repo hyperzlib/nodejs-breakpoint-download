@@ -1,16 +1,25 @@
 {
-  "name": "downloadfile",
-  "version": "1.0.0",
-  "description": "A file download class",
+  "name": "hzdownload",
+  "version": "1.0.1",
+  "description": "A break-point support download library.",
   "main": "downloadFile.js",
   "scripts": {
-    "test": "downloadFile.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "hyperzlib",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyperzlib/nodejs-breakpoint-download.git"
   },
   "keywords": [
+    "breakpoint",
     "download",
-    "range",
-    "pause"
+    "large",
+    "file"
   ],
-  "author": "hyperzlib",
-  "license": "LGPL-3.0"
+  "bugs": {
+    "url": "https://github.com/hyperzlib/nodejs-breakpoint-download/issues"
+  },
+  "homepage": "https://github.com/hyperzlib/nodejs-breakpoint-download#readme"
 }
