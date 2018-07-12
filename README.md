@@ -13,28 +13,32 @@ new downloadFile(sleepData);
 
 ## Functions
 
-| Name | Description |
-| ---- | ----------- |
-| start | Start download |
-| stop | Stop (pause) download |
-| resume | Resume download |
-| sleep | Status to json data (use promise) |
-| on | Subscribe event |
+| Name | Description | Arguments | Returns |
+| ---- | ----------- | --------- | ------- |
+| __construct | The construct function | (url : string, file : string) or (sleepData : object) | ... |
+| start | Start download | void | void |
+| stop | Stop (pause) download | void | void |
+| resume | Resume download | void | void |
+| sleep | Status to json data (use promise) | void | sleepData(in promise) : object |
+| sleepSync | sleep sync mode | void | sleepData : object |
+| on | Subscribe event | (event, callback) | void |
 
 ## Properties
 
 | Name | Description |
 | ---- | ----------- |
-| status | Download status |
-| downloadedBytes | File downloaded |
-| fileLength | File length |
+| status | Download status : string (In prepare, downloading, paused, finish, error) |
+| downloadedBytes | File downloaded : int |
+| downloadedSpeed | Download speed : int |
+| timeout | Connect timeout : int |
+| fileLength | File length : int |
 
 ## Events
 
-| Name | Description |
-| ---- | ----------- |
-| progress | Progress change event |
-| finish | Download done event |
-| pause | Download pause event |
-| error | Download error event |
-| response | Referer: request response event | 
+| Name | Description | Returns |
+| ---- | ----------- | ------- |
+| progress | Progress change event | (downloadBytes : int, fileLength : int) |
+| finish | Download done event | Download filename : string |
+| pause | Download pause event | void |
+| error | Download error event | Error Data : error |
+| response | Referer: request response event | Response Data : object |

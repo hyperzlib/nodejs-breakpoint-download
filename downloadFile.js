@@ -7,6 +7,7 @@ function downloadFile(...args){
 	var fp;
 	var emitter = new events.EventEmitter();
 	var lastDataTime = 0;
+	var nowTime = 0;
 	var lastDownloaded = 0;
 	this.status = 'prepare';
 	this.downloadSpeed = 0;
@@ -18,27 +19,34 @@ function downloadFile(...args){
 	this.file = '';
 	this.url = '';
 	this.tempFile = '';
+	this.taskId = null;
+	this.timeout = 20;
 
 	this.bindOndata = function(){
 		var _this = this;
 		var isAbort = false;
-		downReq.on('data', function(data){
+		function downData(data){
 			fs.writeSync(fp, data);
-			_this.downloadedBytes += data.length;
-			lastDownloaded += data.length;
-			var nowTime = (new Date()).getTime();
+			nowTime = (new Date()).getTime();
 			if(nowTime - lastDataTime > 1000){
+				_this.downloadSpeed = lastDownloaded / ((nowTime - lastDataTime) / 1000);
 				lastDataTime = nowTime;
-				_this.downloadSpeed = lastDownloaded / (nowTime - lastDataTime) / 1000;
+				lastDownloaded = data.length;
+			} else {
+				lastDownloaded += data.length;
 			}
-			//console.log(_this.downloadedBytes);
+			_this.downloadedBytes += data.length;
 			_this.emit('progress', _this.downloadedBytes, _this.fileLength);
-		});
+			data = null;
+		}
+		downReq.on('data', downData);
 		downReq.on('abort', function(){
 			isAbort = true;
 		});
 		downReq.on('end', function(){
-			//console.log('end');
+			if(_this.taskId != null){
+				clearInterval(_this.taskId);
+			}
 			if(!isAbort){
 				fs.closeSync(fp);
 				fs.renameSync(_this.tempFile, _this.file);
@@ -71,6 +79,7 @@ function downloadFile(...args){
 		});
 		downReq.on('response', function(data){
 			//console.log(data);
+			setInterval(_this.task, _this.timeout * 1000);
 			if(typeof data.headers.etag != 'undefined'){
 				_this.etag = data.headers.etag;
 			}
@@ -105,6 +114,7 @@ function downloadFile(...args){
 			strictSSL: false,
 		});
 		downReq.on('response', function(data){
+			setInterval(_this.task, _this.timeout * 1000);
 			if(_this.etag == null || data.headers.etag != _this.etag || data.statusCode != 206){
 				//console.log(_this.etag, data.headers.etag, data.statusCode);
 				_this.downloadedBytes = 0;
@@ -124,7 +134,7 @@ function downloadFile(...args){
 		var _this = this;
 		return new Promise(function(resolve, reject){
 			_this.stop();
-			var md5 = _this.getPartMd5(_this.tempFile);
+			var md5 = _this.getPartMd5Sync(_this.tempFile);
 			var sleepData = {
 				file: _this.file,
 				url: _this.url,
@@ -138,7 +148,23 @@ function downloadFile(...args){
 		});
 	};
 
-	this.getPartMd5 = function(file, length){
+	this.sleepSync = function(){
+		var _this = this;
+		_this.stop();
+		var md5 = _this.getPartMd5Sync(_this.tempFile);
+		var sleepData = {
+			file: _this.file,
+			url: _this.url,
+			tempFile: _this.tempFile,
+			etag: _this.etag,
+			md5: md5,
+			downloaded: _this.downloadedBytes,
+			fLength: _this.fileLength,
+		};
+		return sleepData;
+	};
+
+	this.getPartMd5Sync = function(file, length){
 		if(fs.existsSync(file)){
 			var fp = fs.openSync(file, 'r');
 			var stat = fs.statSync(file);
@@ -202,7 +228,7 @@ function downloadFile(...args){
 			this.url = data.url;
 			this.tempFile = data.tempFile;
 			if(fs.existsSync(this.tempFile)){
-				if(data.md5 == this.getPartMd5(this.tempFile, data.downloaded)){
+				if(data.md5 == this.getPartMd5Sync(this.tempFile, data.downloaded)){
 					//如果文件大小不同，就截取
 					var fLen = fs.statSync(this.tempFile).size;
 					if(fLen > data.downloaded){
@@ -222,7 +248,14 @@ function downloadFile(...args){
 			}
 		}
 	};
-	
+
+	this.task = function(){
+		if((new Date()).getTime() - nowTime > this.timeout * 1000){
+			this.stop();
+			this.resume();
+		}
+	}
+
 	this.init(args);
 }
 module.exports = downloadFile;
