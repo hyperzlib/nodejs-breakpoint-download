@@ -1,6 +1,6 @@
 {
   "name": "hzdownload",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A break-point support download library.",
   "main": "downloadFile.js",
   "scripts": {
@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/hyperzlib/nodejs-breakpoint-download/issues"
   },
-  "homepage": "https://github.com/hyperzlib/nodejs-breakpoint-download#readme"
+  "homepage": "https://github.com/hyperzlib/nodejs-breakpoint-download#readme",
+  "dependencies": {
+    "request": "^2.87.0"
+  }
 }
