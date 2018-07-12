@@ -20,7 +20,7 @@ function downloadFile(...args){
 	this.url = '';
 	this.tempFile = '';
 	this.taskId = null;
-	this.timeout = 20;
+	this.timeout = 5;
 
 	this.bindOndata = function(){
 		var _this = this;
@@ -46,6 +46,7 @@ function downloadFile(...args){
 		downReq.on('end', function(){
 			if(_this.taskId != null){
 				clearInterval(_this.taskId);
+				_this.taskId = null;
 			}
 			if(!isAbort){
 				fs.closeSync(fp);
@@ -79,7 +80,9 @@ function downloadFile(...args){
 		});
 		downReq.on('response', function(data){
 			//console.log(data);
-			setInterval(_this.task, _this.timeout * 1000);
+			_this.taskId = setInterval(function(){
+				_this.task();
+			}, 1000);
 			if(typeof data.headers.etag != 'undefined'){
 				_this.etag = data.headers.etag;
 			}
@@ -114,7 +117,9 @@ function downloadFile(...args){
 			strictSSL: false,
 		});
 		downReq.on('response', function(data){
-			setInterval(_this.task, _this.timeout * 1000);
+			_this.taskId = setInterval(function(){
+				_this.task();
+			}, 1000);
 			if(_this.etag == null || data.headers.etag != _this.etag || data.statusCode != 206){
 				//console.log(_this.etag, data.headers.etag, data.statusCode);
 				_this.downloadedBytes = 0;
